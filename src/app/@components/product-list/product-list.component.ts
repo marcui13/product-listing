@@ -15,6 +15,7 @@ import { ProductService } from '../../@services/product.service';
 // INTERFACES
 import { Product } from '../../@interfaces/product.interface';
 import { MatSelectModule } from '@angular/material/select';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-list',
@@ -41,7 +42,10 @@ export class ProductListComponent implements OnInit {
 
   private currentPageIndex: number = 0; // Track page index
 
-  constructor(private productService: ProductService) {
+  constructor(
+    private productService: ProductService,
+    private router: Router
+  ) {
     this.dataSource = new MatTableDataSource<Product>();
   }
 
@@ -107,6 +111,8 @@ export class ProductListComponent implements OnInit {
     this.productService.getProductDetails(productId)
       .subscribe(res => {
         console.log(res);
+        // Redirige a la página de detalles del producto con el ID especificado
+        this.router.navigate(['/product', productId]);
       });
     // Aquí podrías redirigir a la ruta de detalles del producto con Router.navigate()
   }
