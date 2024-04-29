@@ -14,13 +14,13 @@ To run this project locally, follow these steps:
 1. Clone the repository:
 
    ```shell
-   git clone [repository_url]
+   git clone https://github.com/marcui13/product-listing.git
    ```
 
 2. Navigate to the project directory:
 
    ```shell
-   cd [repository_name]
+   cd product-listing
    ```
 
 3. Install dependencies:
