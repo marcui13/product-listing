@@ -1,27 +1,54 @@
-# ProductListing
+# Angular Product Listing
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.0.
+This is a project developed using Angular 17 with Angular Material for managing and displaying products. It includes various features such as:
 
-## Development server
+- **Product Listing:** Display products in a table with pagination and filtering options.
+- **Currency Conversion:** Switch between USD and EUR for product prices.
+- **Category Navigation:** Sidebar navigation with product categories for filtering the list.
+- **Product Details:** View and edit details of selected products.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Installation
 
-## Code scaffolding
+To run this project locally, follow these steps:
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+1. Clone the repository:
 
-## Build
+   ```shell
+   git clone [repository_url]
+   ```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+2. Navigate to the project directory:
 
-## Running unit tests
+   ```shell
+   cd [repository_name]
+   ```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+3. Install dependencies:
 
-## Running end-to-end tests
+   ```shell
+   npm install
+   ```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+4. Start the development server:
 
-## Further help
+   ```shell
+   ng serve
+   ```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+5. Access the application in your browser at `http://localhost:4200`.
+
+## Usage
+
+- Explore the product list and use the filter and pagination controls to navigate the products.
+- Switch between USD and EUR currency using the provided options.
+- Use the sidebar navigation to filter products by category.
+- Click on a product to view its details and edit name, price, stock, and description.
+
+## Testing
+
+- Tests are located in the `src/app` directory.
+- Run tests using the command:
+
+  ```shell
+  ng test
+  ```
