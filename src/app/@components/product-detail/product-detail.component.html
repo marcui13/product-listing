@@ -1,0 +1,40 @@
+<div *ngIf="product">
+  <h2>Product Details: {{ product.title }}</h2>
+
+  <div *ngIf="!isEditing">
+    <p><strong>Brand:</strong> {{ product.brand }}</p>
+    <p><strong>Price:</strong> {{ product.price | currency: currentCurrency }}</p>
+    <p><strong>Stock:</strong> {{ product.stock }}</p>
+    <p><strong>Description:</strong> {{ product.description }}</p>
+
+    <!-- Botón para iniciar la edición -->
+    <button mat-raised-button color="primary" (click)="startEditing()">Edit</button>
+  </div>
+
+  <div *ngIf="isEditing">
+    <!-- Campos de edición -->
+    <mat-form-field appearance="outline">
+      <mat-label>Name</mat-label>
+      <input matInput [(ngModel)]="product.title">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Price</mat-label>
+      <input matInput type="number" [(ngModel)]="product.price">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Stock</mat-label>
+      <input matInput type="number" [(ngModel)]="product.stock">
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Description</mat-label>
+      <textarea matInput [(ngModel)]="product.description"></textarea>
+    </mat-form-field>
+
+    <!-- Botones para guardar y cancelar -->
+    <button mat-raised-button color="primary" (click)="saveProduct()">Save</button>
+    <button mat-raised-button (click)="cancelEditing()">Cancel</button>
+  </div>
+</div>
