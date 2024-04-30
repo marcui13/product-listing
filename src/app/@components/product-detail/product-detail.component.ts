@@ -1,15 +1,18 @@
+// ANGULAR
+import { FormsModule } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { ProductService } from '../../@services/product.service';
-import { Product } from '../../@interfaces/product.interface';
-
-// Importar módulos de Angular Material
+// ANGULAR MATERIAL
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { FormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+// SERVICES
+import { ProductService } from '../../@services/product.service';
+// INTERFACES
+import { Product } from '../../@interfaces/product.interface';
+// LIBRARIES
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,7 +31,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   productId!: number;
   product: Product | null = null;
   isEditing: boolean = false;
-  currentCurrency: 'USD' | 'EUR' = 'USD'; // Define currentCurrency
+  currentCurrency: 'USD' | 'EUR' = 'USD';
   private routeSub: Subscription | null = null;
 
   constructor(
@@ -36,23 +39,29 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private productService: ProductService
   ) { }
 
+  /*****************************************/
+  /******** ngOnInit ***********************/
+  /*****************************************/
   ngOnInit(): void {
-    // Suscribirse a los parámetros de la ruta para obtener el ID del producto
     this.routeSub = this.route.params.subscribe(params => {
       this.productId = params['id'];
       this.loadProductDetails(this.productId);
     });
   }
 
+  /*****************************************/
+  /******** ngOnDestroy ********************/
+  /*****************************************/
   ngOnDestroy(): void {
-    // Desuscribirse de la suscripción a los parámetros de la ruta
     if (this.routeSub) {
       this.routeSub.unsubscribe();
     }
   }
 
+  /*****************************************/
+  /****** loadProductDetails ***************/
+  /*****************************************/
   loadProductDetails(productId: number): void {
-    // Cargar los detalles del producto utilizando ProductService
     this.productService.getProductDetails(productId).subscribe({
       next: (product) => {
         this.product = product;
@@ -63,20 +72,26 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  /*****************************************/
+  /******** startEditing *******************/
+  /*****************************************/
   startEditing(): void {
-    // Habilitar el modo de edición
     this.isEditing = true;
   }
 
+  /*****************************************/
+  /******** cancelEditing ******************/
+  /*****************************************/
   cancelEditing(): void {
-    // Cancelar el modo de edición y recargar los detalles del producto
     this.isEditing = false;
     this.loadProductDetails(this.productId);
   }
 
+  /*****************************************/
+  /******** saveProduct ********************/
+  /*****************************************/
   saveProduct(): void {
     if (this.product) {
-      // Guardar los cambios realizados en el producto utilizando ProductService
       this.productService.updateProduct(this.productId, this.product).subscribe({
         next: (updatedProduct) => {
           this.product = updatedProduct;

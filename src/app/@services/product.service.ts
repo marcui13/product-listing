@@ -1,7 +1,10 @@
+// ANGULAR
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+// LIBRARIES
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
+// INTERFACES
 import { Product } from '../@interfaces/product.interface';
 
 @Injectable({
@@ -12,7 +15,20 @@ export class ProductService {
 
   constructor(private http: HttpClient) { }
 
-  // Obtener la lista de productos con paginación, filtrado y selección
+  /*****************************************/
+  /******** getAllProducts *****************/
+  /*****************************************/
+  getAllProducts(): Observable<Product[]> {
+    const url = `${this.BASE_URL}?limit=0`;
+    return this.http.get<{ products: Product[] }>(url).pipe(
+      map(response => response.products),
+      catchError(this.handleError)
+    );
+  }
+
+  /*****************************************/
+  /******** getProducts ********************/
+  /*****************************************/
   getProducts(page: number, limit: number, search?: string, category?: string, select?: string): Observable<{ products: Product[], total: number }> {
     let url = `${this.BASE_URL}?skip=${(page - 1) * limit}&limit=${limit}`;
 
@@ -36,15 +52,9 @@ export class ProductService {
     );
   }
 
-  getAllProducts(): Observable<Product[]> {
-    const url = `${this.BASE_URL}?limit=0`;
-    return this.http.get<{ products: Product[] }>(url).pipe(
-      map(response => response.products), // Extrae la lista de productos de la respuesta
-      catchError(this.handleError)
-    );
-  }
-
-  // Obtener los detalles de un producto específico por ID
+  /*****************************************/
+  /******** getProductDetails **************/
+  /*****************************************/
   getProductDetails(productId: number): Observable<Product> {
     const url = `${this.BASE_URL}/${productId}`;
     return this.http.get<Product>(url).pipe(
@@ -52,15 +62,9 @@ export class ProductService {
     );
   }
 
-  // Añadir un nuevo producto (simulado)
-  addProduct(newProduct: Partial<Product>): Observable<Product> {
-    const url = `${this.BASE_URL}/add`;
-    return this.http.post<Product>(url, newProduct).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // Actualizar un producto específico por ID (simulado)
+  /*****************************************/
+  /******** updateProduct ******************/
+  /*****************************************/
   updateProduct(productId: number, updatedProduct: Partial<Product>): Observable<Product> {
     const url = `${this.BASE_URL}/${productId}`;
     return this.http.put<Product>(url, updatedProduct).pipe(
@@ -68,22 +72,14 @@ export class ProductService {
     );
   }
 
-  // Eliminar un producto específico por ID (simulado)
-  deleteProduct(productId: number): Observable<Product> {
-    const url = `${this.BASE_URL}/${productId}`;
-    return this.http.delete<Product>(url).pipe(
-      catchError(this.handleError)
-    );
-  }
-
-  // Manejar errores en las solicitudes HTTP
+  /*****************************************/
+  /******** handleError ********************/
+  /*****************************************/
   private handleError(error: HttpErrorResponse): Observable<never> {
     let errorMessage = 'An unknown error occurred!';
     if (error.error instanceof ErrorEvent) {
-      // Errores del cliente
       errorMessage = `Client-side error: ${error.error.message}`;
     } else {
-      // Errores del servidor
       errorMessage = `Server-side error: ${error.status} - ${error.message}`;
     }
     console.error(errorMessage);

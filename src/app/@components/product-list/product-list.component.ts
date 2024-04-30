@@ -1,21 +1,19 @@
 // ANGULAR
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 // ANGULAR MATERIAL
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
+import { MatSelectModule } from '@angular/material/select';
 // SERVICES
 import { ProductService } from '../../@services/product.service';
 // INTERFACES
 import { Product } from '../../@interfaces/product.interface';
-import { MatSelectModule } from '@angular/material/select';
-import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-product-list',
@@ -40,7 +38,7 @@ export class ProductListComponent implements OnInit {
   currentPageSize: number = 10;
   productsArray: Array<Product> = [];
 
-  private currentPageIndex: number = 0; // Track page index
+  private currentPageIndex: number = 0;
 
   constructor(
     private productService: ProductService,
@@ -49,13 +47,18 @@ export class ProductListComponent implements OnInit {
     this.dataSource = new MatTableDataSource<Product>();
   }
 
+  /*****************************************/
+  /******** ngOnInit ***********************/
+  /*****************************************/
   ngOnInit(): void {
     this.getProducts();
     this.getAllProducts();
   }
 
+  /*****************************************/
+  /******** getProducts ********************/
+  /*****************************************/
   getProducts(): void {
-    // Obtener la lista de productos con paginación
     this.productService.getProducts(this.currentPageIndex + 1, this.currentPageSize)
       .subscribe({
         next: (response) => {
@@ -68,6 +71,9 @@ export class ProductListComponent implements OnInit {
       });
   }
 
+  /*****************************************/
+  /******* getAllProducts ******************/
+  /*****************************************/
   getAllProducts() {
     this.productService.getAllProducts()
       .subscribe({
@@ -81,23 +87,35 @@ export class ProductListComponent implements OnInit {
       });
   }
 
+  /*****************************************/
+  /******** applyFilter ********************/
+  /*****************************************/
   applyFilter(event: Event): void {
     console.log(event);
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.dataSource.filter = filterValue;
   }
 
+  /*****************************************/
+  /******** changePage *********************/
+  /*****************************************/
   changePage(event: any): void {
     this.currentPageIndex = event.pageIndex;
     this.currentPageSize = event.pageSize;
-    this.getProducts(); // Vuelve a obtener los productos con los nuevos parámetros de paginación
+    this.getProducts();
   }
 
+  /*****************************************/
+  /******** onCurrencyChange ***************/
+  /*****************************************/
   onCurrencyChange(newCurrency: 'USD' | 'EUR'): void {
     this.currentCurrency = newCurrency;
     this.convertPrices();
   }
 
+  /*****************************************/
+  /******** convertPrices ******************/
+  /*****************************************/
   convertPrices(): void {
     const conversionRate = this.currentCurrency === 'EUR' ? 1.08 : 1;
     this.dataSource.data.forEach((product) => {
@@ -105,18 +123,21 @@ export class ProductListComponent implements OnInit {
     });
   }
 
+  /*****************************************/
+  /****** viewProductDetails ***************/
+  /*****************************************/
   viewProductDetails(productId: number): void {
-    // Lógica para navegar a la página de detalles del producto
     console.log(`Ver detalles del producto ${productId}`);
     this.productService.getProductDetails(productId)
       .subscribe(res => {
         console.log(res);
-        // Redirige a la página de detalles del producto con el ID especificado
         this.router.navigate(['/product', productId]);
       });
-    // Aquí podrías redirigir a la ruta de detalles del producto con Router.navigate()
   }
 
+  /*****************************************/
+  /******** getNameColor *******************/
+  /*****************************************/
   getNameColor(stock: number): string {
     if (stock === 0) {
       return 'red';
