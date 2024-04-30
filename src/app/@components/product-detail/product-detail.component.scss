@@ -1,0 +1,36 @@
+.product-detail {
+    max-width: 450px;
+    max-height: 500px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.details-column {
+    padding: 10px;
+}
+
+
+.product-image img {
+    width: 100%;
+    height: auto;
+    max-width: 300px;
+    max-height: 300px;
+    display: block;
+    margin: 0 auto;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.edit-field {
+    margin-right: 2%;
+}

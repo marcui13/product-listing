@@ -1,19 +1,36 @@
-<div *ngIf="product">
+<div class="product-detail" *ngIf="product">
   <h2>Product Details: {{ product.title }}</h2>
 
   <div *ngIf="!isEditing">
-    <p><strong>Brand:</strong> {{ product.brand }}</p>
-    <p><strong>Price:</strong> {{ product.price | currency: currentCurrency }}</p>
-    <p><strong>Stock:</strong> {{ product.stock }}</p>
-    <p><strong>Description:</strong> {{ product.description }}</p>
+    <!-- Imagen del producto -->
+    <div class="product-image">
+      <img [src]="product.thumbnail" alt="{{ product.title }}" />
+    </div>
 
-    <!-- Botón para iniciar la edición -->
-    <button mat-raised-button color="primary" (click)="startEditing()">Edit</button>
+    <!-- Detalles organizados en una cuadrícula de dos columnas -->
+    <div class="details-grid">
+      <div class="details-column">
+        <p><strong>Brand:</strong> {{ product.brand }}</p>
+        <p><strong>Price:</strong> {{ product.price | currency: currentCurrency }}</p>
+        <p><strong>Discount:</strong> {{ product.discountPercentage / 100 | percent }}</p>
+      </div>
+      <div class="details-column">
+        <p><strong>Category:</strong> {{ product.category }}</p>
+        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Description:</strong> {{ product.description }}</p>
+      </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" (click)="startEditing()">Edit</button>
+      <button mat-raised-button color="warn" (click)="closeDialog()">Close</button>
+    </div>
   </div>
 
   <div *ngIf="isEditing">
     <!-- Campos de edición -->
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="edit-field">
       <mat-label>Name</mat-label>
       <input matInput [(ngModel)]="product.title">
     </mat-form-field>
@@ -23,7 +40,7 @@
       <input matInput type="number" [(ngModel)]="product.price">
     </mat-form-field>
 
-    <mat-form-field appearance="outline">
+    <mat-form-field appearance="outline" class="edit-field">
       <mat-label>Stock</mat-label>
       <input matInput type="number" [(ngModel)]="product.stock">
     </mat-form-field>
@@ -34,7 +51,9 @@
     </mat-form-field>
 
     <!-- Botones para guardar y cancelar -->
-    <button mat-raised-button color="primary" (click)="saveProduct()">Save</button>
-    <button mat-raised-button (click)="cancelEditing()">Cancel</button>
+    <div class="action-buttons">
+      <button mat-raised-button color="primary" (click)="saveProduct()">Save</button>
+      <button mat-raised-button (click)="cancelEditing()">Cancel</button>
+    </div>
   </div>
 </div>
