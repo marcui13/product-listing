@@ -1,6 +1,6 @@
 // ANGULAR
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http';
 // LIBRARIES
 import { Observable, throwError } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -65,9 +65,10 @@ export class ProductService {
   /*****************************************/
   /******** updateProduct ******************/
   /*****************************************/
-  updateProduct(productId: number, updatedProduct: Partial<Product>): Observable<Product> {
+  updateProduct(productId: number, update: Partial<Product>): Observable<Product> {
     const url = `${this.BASE_URL}/${productId}`;
-    return this.http.put<Product>(url, updatedProduct).pipe(
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    return this.http.patch<Product>(url, update, { headers }).pipe(
       catchError(this.handleError)
     );
   }
