@@ -11,10 +11,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 // SERVICES
 import { ProductService } from '../../@services/product.service';
 // INTERFACES
 import { Product } from '../../@interfaces/product.interface';
+// COMPONENTS
+import { ProductDetailComponent } from '../product-detail/product-detail.component';
 
 @Component({
   selector: 'app-product-list',
@@ -27,7 +30,8 @@ import { Product } from '../../@interfaces/product.interface';
     MatIconModule,
     MatButtonModule,
     MatSelectModule,
-    MatTooltipModule
+    MatTooltipModule,
+    MatDialogModule
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
@@ -45,7 +49,8 @@ export class ProductListComponent implements OnInit {
 
   constructor(
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private dialog: MatDialog
   ) {
     this.dataSource = new MatTableDataSource<Product>();
   }
@@ -174,5 +179,14 @@ export class ProductListComponent implements OnInit {
       return '#ffd600';
     }
     return '#001dff';
+  }
+
+  openProductDetailDialog(productId: number): void {
+    // Abre el modal con el componente ProductDetail
+    this.dialog.open(ProductDetailComponent, {
+        data: {
+            productId: productId // Pasa el ID del producto como dato
+        }
+    });
   }
 }
