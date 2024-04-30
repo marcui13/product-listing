@@ -53,6 +53,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   /******** ngOnInit ***********************/
   /*****************************************/
   ngOnInit(): void {
+    this.currentCurrency = this.retrieveSavedCurrency();
     this.loadProductDetails(this.productId);
   }
 
@@ -66,6 +67,29 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   }
 
   /*****************************************/
+  /******** retrieveSavedCurrency **********/
+  /*****************************************/
+  retrieveSavedCurrency(): 'USD' | 'EUR' {
+    // Recupera la moneda guardada en localStorage
+    const savedCurrency = localStorage.getItem('selectedCurrency');
+    if (savedCurrency === 'USD' || savedCurrency === 'EUR') {
+        return savedCurrency as 'USD' | 'EUR';
+    }
+    // Si no hay moneda guardada, se retorna la moneda predeterminada ('USD')
+    return 'USD';
+  }
+
+  /*****************************************/
+  /******** convertPrices ******************/
+  /*****************************************/
+  convertPrices(): void {
+    if (this.product) {
+      const conversionRate = this.currentCurrency === 'EUR' ? 0.93 : 1;
+      this.product.price *= conversionRate; // Multiplica el precio por la tasa de conversión
+    }
+  }
+
+  /*****************************************/
   /******** loadProductDetails *************/
   /*****************************************/
   loadProductDetails(productId: number): void {
@@ -73,6 +97,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       next: (product) => {
         this.product = product;
         this.originalProduct = { ...product };
+        this.convertPrices();
       },
       error: (error) => {
         console.error('Error loading product details:', error);
