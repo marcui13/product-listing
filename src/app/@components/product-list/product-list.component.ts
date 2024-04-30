@@ -32,11 +32,12 @@ import { Product } from '../../@interfaces/product.interface';
 })
 
 export class ProductListComponent implements OnInit {
-  dataSource: MatTableDataSource<Product>;
-  displayedColumns: string[] = ['name', 'brand', 'price', 'stock', 'rating', 'actions'];
-  currentCurrency: 'USD' | 'EUR' = 'USD';
-  currentPageSize: number = 10;
-  productsArray: Array<Product> = [];
+  public dataSource: MatTableDataSource<Product>;
+  public displayedColumns: string[] = ['name', 'brand', 'price', 'stock', 'rating', 'actions'];
+  public currentCurrency: 'USD' | 'EUR' = 'USD';
+  public currentPageSize: number = 10;
+  public productsArray: Array<Product> = [];
+  public originalPrices: { [key: number]: number } = {};
 
   private currentPageIndex: number = 0;
 
@@ -51,8 +52,22 @@ export class ProductListComponent implements OnInit {
   /******** ngOnInit ***********************/
   /*****************************************/
   ngOnInit(): void {
+    this.currentCurrency = this.retrieveSavedCurrency();
     this.getProducts();
     this.getAllProducts();
+  }
+
+  /*****************************************/
+  /******** retrieveSavedCurrency **********/
+  /*****************************************/
+  retrieveSavedCurrency(): 'USD' | 'EUR' {
+    // Recupera la moneda guardada en localStorage
+    const savedCurrency = localStorage.getItem('selectedCurrency');
+    if (savedCurrency === 'USD' || savedCurrency === 'EUR') {
+        return savedCurrency as 'USD' | 'EUR';
+    }
+    // Si no hay moneda guardada, se retorna la moneda predeterminada ('USD')
+    return 'USD';
   }
 
   /*****************************************/
@@ -62,8 +77,9 @@ export class ProductListComponent implements OnInit {
     this.productService.getProducts(this.currentPageIndex + 1, this.currentPageSize)
       .subscribe({
         next: (response) => {
-          console.log(response);
           this.dataSource.data = response.products;
+          this.saveOriginalPrices();
+          this.convertPrices();
         },
         error: (error) => {
           console.error('Error fetching products:', error);
@@ -78,7 +94,6 @@ export class ProductListComponent implements OnInit {
     this.productService.getAllProducts()
       .subscribe({
         next: (response) => {
-          console.log(response);
           this.productsArray = response;
         },
         error: (error) => {
@@ -88,10 +103,21 @@ export class ProductListComponent implements OnInit {
   }
 
   /*****************************************/
+  /******* saveOriginalPrices **************/
+  /*****************************************/
+  saveOriginalPrices(): void {
+    // Guarda los precios originales
+    this.dataSource.data.forEach(product => {
+      if (!(product.id in this.originalPrices)) {
+        this.originalPrices[product.id] = product.price;
+      }
+    });
+  }
+
+  /*****************************************/
   /******** applyFilter ********************/
   /*****************************************/
   applyFilter(event: Event): void {
-    console.log(event);
     const filterValue = (event.target as HTMLInputElement).value.trim().toLowerCase();
     this.dataSource.filter = filterValue;
   }
@@ -110,6 +136,8 @@ export class ProductListComponent implements OnInit {
   /*****************************************/
   onCurrencyChange(newCurrency: 'USD' | 'EUR'): void {
     this.currentCurrency = newCurrency;
+    // Guarda la moneda seleccionada en localStorage
+    localStorage.setItem('selectedCurrency', newCurrency);
     this.convertPrices();
   }
 
@@ -117,9 +145,10 @@ export class ProductListComponent implements OnInit {
   /******** convertPrices ******************/
   /*****************************************/
   convertPrices(): void {
-    const conversionRate = this.currentCurrency === 'EUR' ? 1.08 : 1;
+    const conversionRate = this.currentCurrency === 'EUR' ? 0.93 : 1;
+    // Aplica la tasa de conversión a los precios originales
     this.dataSource.data.forEach((product) => {
-      product.price *= conversionRate;
+      product.price = this.originalPrices[product.id] * conversionRate;
     });
   }
 
@@ -127,10 +156,8 @@ export class ProductListComponent implements OnInit {
   /****** viewProductDetails ***************/
   /*****************************************/
   viewProductDetails(productId: number): void {
-    console.log(`Ver detalles del producto ${productId}`);
     this.productService.getProductDetails(productId)
       .subscribe(res => {
-        console.log(res);
         this.router.navigate(['/product', productId]);
       });
   }
