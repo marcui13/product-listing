@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 // SERVICES
 import { ProductService } from '../../@services/product.service';
 // INTERFACES
@@ -26,13 +27,15 @@ import { Subscription } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatButtonModule,
-    MatTableModule
+    MatTableModule,
+    MatSnackBarModule 
   ],
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
   public productId: number;
-  public product: Product | null = null;
   public isEditing: boolean = false;
+  public product: Product | null = null;
+  public originalProduct: Product | null = null;
   public currentCurrency: 'USD' | 'EUR' = 'USD';
 
   private routeSub: Subscription | null = null;
@@ -40,26 +43,36 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: { productId: number },
     private dialogRef: MatDialogRef<ProductDetailComponent>,
-    private productService: ProductService
+    private productService: ProductService,
+    private snackBar: MatSnackBar
   ) {
     this.productId = data.productId;
   }
-
+  
+  /*****************************************/
+  /******** ngOnInit ***********************/
+  /*****************************************/
   ngOnInit(): void {
-    // Carga los detalles del producto utilizando el ID de producto pasado como dato
     this.loadProductDetails(this.productId);
   }
 
+  /*****************************************/
+  /******** ngOnDestroy ********************/
+  /*****************************************/
   ngOnDestroy(): void {
     if (this.routeSub) {
       this.routeSub.unsubscribe();
     }
   }
 
+  /*****************************************/
+  /******** loadProductDetails *************/
+  /*****************************************/
   loadProductDetails(productId: number): void {
     this.productService.getProductDetails(productId).subscribe({
       next: (product) => {
         this.product = product;
+        this.originalProduct = { ...product };
       },
       error: (error) => {
         console.error('Error loading product details:', error);
@@ -67,32 +80,130 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     });
   }
 
+  /*****************************************/
+  /******** startEditing *******************/
+  /*****************************************/
   startEditing(): void {
     this.isEditing = true;
   }
 
+  /*****************************************/
+  /******** cancelEditing ******************/
+  /*****************************************/
   cancelEditing(): void {
     this.isEditing = false;
     this.loadProductDetails(this.productId);
   }
 
+  /*****************************************/
+  /******** saveProduct ********************/
+  /*****************************************/
   saveProduct(): void {
     if (this.product) {
-      this.productService.updateProduct(this.productId, this.product).subscribe({
-        next: (updatedProduct) => {
-          this.product = updatedProduct;
-          this.isEditing = false;
-          console.log('Product updated successfully:', updatedProduct);
-        },
-        error: (error) => {
-          console.error('Error updating product:', error);
+        const updatedFields: Partial<Product> = this.getUpdatedFields();
+        
+        if (Object.keys(updatedFields).length === 0) {
+            this.showNoChangesSnackbar();
+            return;
         }
-      });
+        
+        this.productService.updateProduct(this.productId, updatedFields).subscribe({
+            next: (updatedProduct) => {
+                this.handleSuccessUpdate(updatedProduct);
+            },
+            error: (error) => {
+                this.handleErrorUpdate(error);
+            },
+        });
     }
   }
 
+  /*****************************************/
+  /******** handleSuccessUpdate ************/
+  /*****************************************/
+  private handleSuccessUpdate(updatedProduct: Product): void {
+      this.product = updatedProduct;
+      this.isEditing = false;
+      this.showSuccessSnackbar();
+      console.log('Product updated successfully:', updatedProduct);
+  }
+  /*****************************************/
+  /******** handleErrorUpdate **************/
+  /*****************************************/
+  private handleErrorUpdate(error: any): void {
+      this.showErrorSnackbar();
+      console.error('Error updating product:', error);
+  }
+
+  /*****************************************/
+  /******** showSuccessSnackbar ************/
+  /*****************************************/
+  private showSuccessSnackbar(): void {
+      this.snackBar.open('Product updated successfully', 'Close', {
+          duration: 3000,
+          panelClass: ['success-snackbar'],
+      });
+  }
+
+  /*****************************************/
+  /******** showErrorSnackbar **************/
+  /*****************************************/
+  private showErrorSnackbar(): void {
+      this.snackBar.open('Error updating product', 'Close', {
+          duration: 3000,
+          panelClass: ['error-snackbar'],
+      });
+  }
+
+  /*****************************************/
+  /******** showNoChangesSnackbar **********/
+  /*****************************************/
+  private showNoChangesSnackbar(): void {
+      this.snackBar.open('No changes made', 'Close', {
+          duration: 3000,
+          panelClass: ['warning-snackbar'],
+      });
+  }
+
+  /*****************************************/
+  /******** getUpdatedFields ***************/
+  /*****************************************/
+  private getUpdatedFields(): Partial<Product> {
+      const updatedFields: Partial<Product> = {};
+      if(this.product){
+        if (this.product.title !== this.originalProduct?.title) {
+            updatedFields.title = this.product.title;
+        }
+        if (this.product.price !== this.originalProduct?.price) {
+            updatedFields.price = this.product.price;
+        }
+        if (this.product.stock !== this.originalProduct?.stock) {
+            updatedFields.stock = this.product.stock;
+        }
+        if (this.product.description !== this.originalProduct?.description) {
+            updatedFields.description = this.product.description;
+        }
+      }
+      return updatedFields;
+  }
+
+  /*****************************************/
+  /******** closeDialog ********************/
+  /*****************************************/
   closeDialog(): void {
     // Cierra el modal
     this.dialogRef.close();
+  }
+
+  /*****************************************/
+  /******** getNameColor *******************/
+  /*****************************************/
+  getNameColor(stock: number): string {
+    if (stock === 0) {
+      return '#f44336';
+    } else if (stock < 50) {
+      return '#ffd600';
+    }
+    return '#001dff';
   }
 }

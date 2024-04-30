@@ -16,7 +16,8 @@
       </div>
       <div class="details-column">
         <p><strong>Category:</strong> {{ product.category }}</p>
-        <p><strong>Stock:</strong> {{ product.stock }}</p>
+        <p><strong>Stock:</strong></p>
+        <p [style.color]="getNameColor(product.stock)"> {{ product.stock }}</p>
         <p><strong>Description:</strong> {{ product.description }}</p>
       </div>
     </div>
