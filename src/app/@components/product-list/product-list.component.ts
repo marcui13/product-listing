@@ -10,6 +10,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSelectModule } from '@angular/material/select';
+import { MatTooltipModule } from '@angular/material/tooltip';
 // SERVICES
 import { ProductService } from '../../@services/product.service';
 // INTERFACES
@@ -25,7 +26,8 @@ import { Product } from '../../@interfaces/product.interface';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    MatSelectModule
+    MatSelectModule,
+    MatTooltipModule
   ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
