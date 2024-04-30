@@ -33,7 +33,7 @@ import { Product } from '../../@interfaces/product.interface';
 
 export class ProductListComponent implements OnInit {
   dataSource: MatTableDataSource<Product>;
-  displayedColumns: string[] = ['thumbnail', 'name', 'brand', 'price', 'stock', 'rating', 'actions'];
+  displayedColumns: string[] = ['name', 'brand', 'price', 'stock', 'rating', 'actions'];
   currentCurrency: 'USD' | 'EUR' = 'USD';
   currentPageSize: number = 10;
   productsArray: Array<Product> = [];
@@ -140,10 +140,10 @@ export class ProductListComponent implements OnInit {
   /*****************************************/
   getNameColor(stock: number): string {
     if (stock === 0) {
-      return 'red';
+      return '#f44336';
     } else if (stock < 50) {
-      return 'yellow';
+      return '#ffd600';
     }
-    return 'blue';
+    return '#001dff';
   }
 }
