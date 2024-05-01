@@ -33,6 +33,9 @@ import { CurrencyHelper } from '../../@helpers/currency.helper';
     MatTableModule,
     MatSnackBarModule
   ],
+  providers: [
+    CurrencyHelper
+  ],
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
   public productId: number;
