@@ -4,4 +4,10 @@
     .search-bar, .currency-selector {
         margin-right: 2%;
     }
+
+    .product-thumbnail {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+    }
 }

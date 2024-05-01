@@ -44,7 +44,7 @@ import { CurrencyHelper } from '../../@helpers/currency.helper';
 
 export class ProductListComponent implements OnInit {
   public dataSource: MatTableDataSource<Product>;
-  public displayedColumns: string[] = ['name', 'brand', 'price', 'stock', 'rating', 'actions'];
+  public displayedColumns: string[] = ['thumbnail', 'name', 'brand', 'price', 'stock', 'rating', 'actions'];
   public currentCurrency: 'USD' | 'EUR' = 'USD';
   public currentPageSize: number = 10;
   public originalPrices: { [key: number]: number } = {};
