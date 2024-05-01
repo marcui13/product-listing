@@ -13,6 +13,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
 // SERVICES
 import { ProductService } from '../../@services/product.service';
+import { NotificationService } from '../../@services/notification.service';
 // INTERFACES
 import { Product } from '../../@interfaces/product.interface';
 // HELPERS
@@ -47,7 +48,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     private dialogRef: MatDialogRef<ProductDetailComponent>,
     private productService: ProductService,
     private snackBar: MatSnackBar,
-    private currencyHelper: CurrencyHelper
+    private currencyHelper: CurrencyHelper,
+    private notificationService: NotificationService
   ) {
     this.productId = data.productId;
   }
@@ -125,7 +127,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       const updatedFields: Partial<Product> = this.getUpdatedFields();
 
       if (Object.keys(updatedFields).length === 0) {
-        this.showNoChangesSnackbar();
+        this.notificationService.showWarning('No changes made');
         return;
       }
 
@@ -134,7 +136,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
           this.handleSuccessUpdate(updatedProduct);
         },
         error: (error) => {
-          this.handleErrorUpdate(error);
+          this.notificationService.showError('Error updating product');
         },
       });
     }
@@ -146,45 +148,8 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   private handleSuccessUpdate(updatedProduct: Product): void {
     this.product = updatedProduct;
     this.isEditing = false;
-    this.showSuccessSnackbar();
+    this.notificationService.showSuccess('Product updated successfully');
     console.log('Product updated successfully:', updatedProduct);
-  }
-  /*****************************************/
-  /******** handleErrorUpdate **************/
-  /*****************************************/
-  private handleErrorUpdate(error: any): void {
-    this.showErrorSnackbar();
-    console.error('Error updating product:', error);
-  }
-
-  /*****************************************/
-  /******** showSuccessSnackbar ************/
-  /*****************************************/
-  private showSuccessSnackbar(): void {
-    this.snackBar.open('Product updated successfully', 'Close', {
-      duration: 3000,
-      panelClass: ['success-snackbar'],
-    });
-  }
-
-  /*****************************************/
-  /******** showErrorSnackbar **************/
-  /*****************************************/
-  private showErrorSnackbar(): void {
-    this.snackBar.open('Error updating product', 'Close', {
-      duration: 3000,
-      panelClass: ['error-snackbar'],
-    });
-  }
-
-  /*****************************************/
-  /******** showNoChangesSnackbar **********/
-  /*****************************************/
-  private showNoChangesSnackbar(): void {
-    this.snackBar.open('No changes made', 'Close', {
-      duration: 3000,
-      panelClass: ['warning-snackbar'],
-    });
   }
 
   /*****************************************/
