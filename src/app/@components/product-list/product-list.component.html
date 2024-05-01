@@ -86,7 +86,7 @@
   </table>
 
   <!-- Paginación -->
-  <mat-paginator [length]="dataSource.data.length" [pageSize]="currentPageSize" [pageSizeOptions]="[10, 25, 50, 100]"
+  <mat-paginator [length]="productsArray.length" [pageSize]="currentPageSize" [pageSizeOptions]="[10, 25, 50, 100]"
     (page)="changePage($event)">
   </mat-paginator>
 </div>

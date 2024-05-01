@@ -27,9 +27,9 @@ export class ProductService {
   }
 
   /*****************************************/
-  /******** getProducts ********************/
+  /******** getPaginatedProducts ***********/
   /*****************************************/
-  getProducts(page: number, limit: number, search?: string, category?: string, select?: string): Observable<{ products: Product[], total: number }> {
+  getPaginatedProducts(page: number, limit: number, search?: string, category?: string, select?: string): Observable<{ products: Product[], total: number }> {
     let url = `${this.BASE_URL}?skip=${(page - 1) * limit}&limit=${limit}`;
 
     // Añadir búsqueda por nombre

@@ -44,6 +44,7 @@ import { CurrencyHelper } from '../../@helpers/currency.helper';
 
 export class ProductListComponent implements OnInit {
   public dataSource: MatTableDataSource<Product>;
+  public productsArray: Array<Product> = [];
   public displayedColumns: string[] = ['thumbnail', 'name', 'brand', 'price', 'stock', 'rating', 'actions'];
   public currentCurrency: 'USD' | 'EUR' = 'USD';
   public currentPageSize: number = 10;
@@ -67,7 +68,7 @@ export class ProductListComponent implements OnInit {
   /*****************************************/
   ngOnInit(): void {
     this.currentCurrency = this.retrieveSavedCurrency();
-    this.getProducts();
+    this.getPaginatedProducts();
     this.getAllProducts();
     this.loadCategories();
   }
@@ -80,11 +81,11 @@ export class ProductListComponent implements OnInit {
   }
 
   /*****************************************/
-  /******** getProducts ********************/
+  /******** getPaginatedProducts ***********/
   /*****************************************/
-  getProducts(): void {
+  getPaginatedProducts(): void {
     if (this.selectedCategory === 'All') {
-      this.productService.getProducts(this.currentPageIndex + 1, this.currentPageSize).subscribe({
+      this.productService.getPaginatedProducts(this.currentPageIndex + 1, this.currentPageSize).subscribe({
         next: (response) => {
           this.dataSource.data = response.products;
           this.saveOriginalPrices();
@@ -115,7 +116,9 @@ export class ProductListComponent implements OnInit {
     this.productService.getAllProducts()
       .subscribe({
         next: (response) => {
-          this.dataSource.data = response;
+          // this.dataSource.data = response;
+          this.productsArray = response;
+          console.log(this.productsArray);
         },
         error: (error) => {
           console.error('Error fetching all products:', error);
@@ -149,7 +152,7 @@ export class ProductListComponent implements OnInit {
   changePage(event: any): void {
     this.currentPageIndex = event.pageIndex;
     this.currentPageSize = event.pageSize;
-    this.getProducts();
+    this.getPaginatedProducts();
   }
 
   /*****************************************/
@@ -213,8 +216,10 @@ export class ProductListComponent implements OnInit {
   /******** filterByCategory ***************/
   /*****************************************/
   filterByCategory(category: string): void {
+    this.currentPageIndex = 0;
     if (category === 'All') {
       this.getAllProducts();
+      this.getPaginatedProducts();
     } else {
       this.productService.getProductsByCategory(category, this.currentPageIndex + 1, this.currentPageSize).subscribe({
         next: (response) => {
