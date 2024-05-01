@@ -35,6 +35,9 @@ import { CurrencyHelper } from '../../@helpers/currency.helper';
     MatTooltipModule,
     MatDialogModule
   ],
+  providers: [
+    CurrencyHelper
+  ],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -44,8 +47,9 @@ export class ProductListComponent implements OnInit {
   public displayedColumns: string[] = ['name', 'brand', 'price', 'stock', 'rating', 'actions'];
   public currentCurrency: 'USD' | 'EUR' = 'USD';
   public currentPageSize: number = 10;
-  public productsArray: Array<Product> = [];
   public originalPrices: { [key: number]: number } = {};
+  public categories: string[] = [];
+  public selectedCategory: string = 'All';
 
   private currentPageIndex: number = 0;
 
@@ -65,6 +69,7 @@ export class ProductListComponent implements OnInit {
     this.currentCurrency = this.retrieveSavedCurrency();
     this.getProducts();
     this.getAllProducts();
+    this.loadCategories();
   }
 
   /*****************************************/
@@ -78,8 +83,8 @@ export class ProductListComponent implements OnInit {
   /******** getProducts ********************/
   /*****************************************/
   getProducts(): void {
-    this.productService.getProducts(this.currentPageIndex + 1, this.currentPageSize)
-      .subscribe({
+    if (this.selectedCategory === 'All') {
+      this.productService.getProducts(this.currentPageIndex + 1, this.currentPageSize).subscribe({
         next: (response) => {
           this.dataSource.data = response.products;
           this.saveOriginalPrices();
@@ -89,6 +94,18 @@ export class ProductListComponent implements OnInit {
           console.error('Error fetching products:', error);
         }
       });
+    } else {
+      this.productService.getProductsByCategory(this.selectedCategory, this.currentPageIndex + 1, this.currentPageSize).subscribe({
+        next: (response) => {
+          this.dataSource.data = response.products;
+          this.saveOriginalPrices();
+          this.convertPrices();
+        },
+        error: (error) => {
+          console.error('Error fetching products by category:', error);
+        }
+      });
+    }
   }
 
   /*****************************************/
@@ -98,7 +115,7 @@ export class ProductListComponent implements OnInit {
     this.productService.getAllProducts()
       .subscribe({
         next: (response) => {
-          this.productsArray = response;
+          this.dataSource.data = response;
         },
         error: (error) => {
           console.error('Error fetching all products:', error);
@@ -176,5 +193,37 @@ export class ProductListComponent implements OnInit {
         productId: productId
       }
     });
+  }
+
+  /*****************************************/
+  /******** loadCategories *****************/
+  /*****************************************/
+  loadCategories(): void {
+    this.productService.getAllCategories().subscribe({
+      next: (categories) => {
+        this.categories = categories;
+      },
+      error: (error) => {
+        console.error('Error fetching categories:', error);
+      }
+    });
+  }
+
+  /*****************************************/
+  /******** filterByCategory ***************/
+  /*****************************************/
+  filterByCategory(category: string): void {
+    if (category === 'All') {
+      this.getAllProducts();
+    } else {
+      this.productService.getProductsByCategory(category, this.currentPageIndex + 1, this.currentPageSize).subscribe({
+        next: (response) => {
+          this.dataSource.data = response.products;
+        },
+        error: (error) => {
+          console.error('Error fetching products by category:', error);
+        }
+      });
+    }
   }
 }

@@ -74,6 +74,27 @@ export class ProductService {
   }
 
   /*****************************************/
+  /******** getAllCategories ***************/
+  /*****************************************/
+  getAllCategories(): Observable<string[]> {
+    const url = `${this.BASE_URL}/categories`;
+    return this.http.get<string[]>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /*****************************************/
+  /******** getProductsByCategory **********/
+  /*****************************************/
+  getProductsByCategory(category: string, page: number, limit: number): Observable<{ products: Product[], total: number }> {
+    const skip = (page - 1) * limit;
+    const url = `${this.BASE_URL}/category/${category}?skip=${skip}&limit=${limit}`;
+    return this.http.get<{ products: Product[], total: number }>(url).pipe(
+      catchError(this.handleError)
+    );
+  }
+
+  /*****************************************/
   /******** handleError ********************/
   /*****************************************/
   private handleError(error: HttpErrorResponse): Observable<never> {

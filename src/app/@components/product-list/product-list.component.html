@@ -1,15 +1,26 @@
 <div class="product-list">
-  <!-- Filtro de búsqueda -->
   <div class="filter-section">
+    <!-- Filtro de búsqueda -->
     <mat-form-field appearance="outline" class="search-bar">
       <mat-label>Search</mat-label>
       <input matInput (input)="applyFilter($event)" placeholder="Search by name...">
     </mat-form-field>
-    <mat-form-field appearance="outline">
+    <!-- Selector de moneda -->
+    <mat-form-field appearance="outline" class="currency-selector">
       <mat-label>Currency</mat-label>
       <mat-select [(value)]="currentCurrency" (selectionChange)="onCurrencyChange($event.value)">
         <mat-option value="USD">USD ($)</mat-option>
         <mat-option value="EUR">EUR (€)</mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!-- Filtro de categoría -->
+    <mat-form-field appearance="outline">
+      <mat-label>Category</mat-label>
+      <mat-select [(value)]="selectedCategory" (selectionChange)="filterByCategory($event.value)">
+        <mat-option value="All">All</mat-option>
+        <mat-option *ngFor="let category of categories" [value]="category">
+          {{ category }}
+        </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
@@ -67,7 +78,7 @@
   </table>
 
   <!-- Paginación -->
-  <mat-paginator [length]="productsArray.length" [pageSize]="currentPageSize" [pageSizeOptions]="[10, 25, 50, 100]"
+  <mat-paginator [length]="dataSource.data.length" [pageSize]="currentPageSize" [pageSizeOptions]="[10, 25, 50, 100]"
     (page)="changePage($event)">
   </mat-paginator>
 </div>
