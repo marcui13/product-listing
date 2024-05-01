@@ -52,7 +52,7 @@ export class ProductListComponent implements OnInit {
   public categories: string[] = [];
   public selectedCategory: string = 'All';
 
-  private currentPageIndex: number = 0;
+  public currentPageIndex: number = 0;
 
   constructor(
     private productService: ProductService,
@@ -230,5 +230,12 @@ export class ProductListComponent implements OnInit {
         }
       });
     }
+  }
+
+  searchProductsByName(name: string): void {
+    this.productService.getPaginatedProducts(1, this.currentPageSize, name).subscribe(response => {
+      this.dataSource.data = response.products;
+      this.currentPageIndex = 0; // Restablece la página actual a 0
+    });
   }
 }
