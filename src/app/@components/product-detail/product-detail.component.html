@@ -2,10 +2,12 @@
   <h2>Product Details: {{ product.title }}</h2>
 
   <div *ngIf="!isEditing">
-    <!-- Imagen del producto -->
-    <div class="product-image">
-      <img [src]="product.thumbnail" alt="{{ product.title }}" />
-    </div>
+    <!-- Carrusel de imágenes del producto con PrimeNG -->
+    <p-carousel [value]="product.images" [numVisible]="1" [numScroll]="1" [circular]="true">
+      <ng-template pTemplate="item" let-image>
+        <img [src]="image" alt="{{ product.title }}">
+      </ng-template>
+    </p-carousel>
 
     <!-- Detalles organizados en una cuadrícula de dos columnas -->
     <div class="details-grid">

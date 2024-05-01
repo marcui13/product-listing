@@ -9,6 +9,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { CarouselModule } from 'primeng/carousel';
 // LIBRARIES
 import { Subscription } from 'rxjs';
 // SERVICES
@@ -31,7 +32,8 @@ import { CurrencyHelper } from '../../@helpers/currency.helper';
     MatInputModule,
     MatButtonModule,
     MatTableModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    CarouselModule
   ],
   providers: [
     CurrencyHelper
