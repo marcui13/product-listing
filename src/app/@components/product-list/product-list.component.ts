@@ -168,10 +168,12 @@ export class ProductListComponent implements OnInit {
   /******** convertPrices ******************/
   /*****************************************/
   convertPrices(): void {
-    const conversionRate = this.currentCurrency === 'EUR' ? 0.93 : 1;
-    // Aplica la tasa de conversión a los precios originales
     this.dataSource.data.forEach((product) => {
-      product.price = this.originalPrices[product.id] * conversionRate;
+      product.price = this.currencyHelper.convertCurrency(
+        this.originalPrices[product.id],
+        'USD',
+        this.currentCurrency
+      );
     });
   }
 

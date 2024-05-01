@@ -88,8 +88,11 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   /*****************************************/
   convertPrices(): void {
     if (this.product) {
-      const conversionRate = this.currentCurrency === 'EUR' ? 0.93 : 1;
-      this.product.price *= conversionRate; // Multiplica el precio por la tasa de conversión
+      this.product.price = this.currencyHelper.convertCurrency(
+        this.product.price,
+        'USD',
+        this.currentCurrency
+      );
     }
   }
 

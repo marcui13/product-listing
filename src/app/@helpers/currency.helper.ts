@@ -1,25 +1,25 @@
 export class CurrencyHelper {
-    private static readonly usdToEurRate: number = 1.08;
+    private readonly usdToEurRate: number = 1.08;
     private readonly currencyKey = 'selectedCurrency';
 
     /*****************************************/
     /******** convertUsdToEur ****************/
     /*****************************************/
-    static convertUsdToEur(priceUSD: number): number {
+    convertUsdToEur(priceUSD: number): number {
         return priceUSD * this.usdToEurRate;
     }
 
     /*****************************************/
     /******** convertEurToUsd ****************/
     /*****************************************/
-    static convertEurToUsd(priceEUR: number): number {
+    convertEurToUsd(priceEUR: number): number {
         return priceEUR / this.usdToEurRate;
     }
 
     /*****************************************/
     /******** convertCurrency ****************/
     /*****************************************/
-    static convertCurrency(price: number, fromCurrency: 'USD' | 'EUR', toCurrency: 'USD' | 'EUR'): number {
+    convertCurrency(price: number, fromCurrency: 'USD' | 'EUR', toCurrency: 'USD' | 'EUR'): number {
         if (fromCurrency === 'USD' && toCurrency === 'EUR') {
             return this.convertUsdToEur(price);
         } else if (fromCurrency === 'EUR' && toCurrency === 'USD') {
