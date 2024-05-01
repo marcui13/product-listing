@@ -9,12 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+// LIBRARIES
+import { Subscription } from 'rxjs';
 // SERVICES
 import { ProductService } from '../../@services/product.service';
 // INTERFACES
 import { Product } from '../../@interfaces/product.interface';
-// LIBRARIES
-import { Subscription } from 'rxjs';
+// HELPERS
+import { CurrencyHelper } from '../../@helpers/currency.helper';
 
 @Component({
   selector: 'app-product-detail',
@@ -28,7 +30,7 @@ import { Subscription } from 'rxjs';
     MatInputModule,
     MatButtonModule,
     MatTableModule,
-    MatSnackBarModule 
+    MatSnackBarModule
   ],
 })
 export class ProductDetailComponent implements OnInit, OnDestroy {
@@ -44,11 +46,12 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
     @Inject(MAT_DIALOG_DATA) public data: { productId: number },
     private dialogRef: MatDialogRef<ProductDetailComponent>,
     private productService: ProductService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private currencyHelper: CurrencyHelper
   ) {
     this.productId = data.productId;
   }
-  
+
   /*****************************************/
   /******** ngOnInit ***********************/
   /*****************************************/
@@ -70,13 +73,7 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   /******** retrieveSavedCurrency **********/
   /*****************************************/
   retrieveSavedCurrency(): 'USD' | 'EUR' {
-    // Recupera la moneda guardada en localStorage
-    const savedCurrency = localStorage.getItem('selectedCurrency');
-    if (savedCurrency === 'USD' || savedCurrency === 'EUR') {
-        return savedCurrency as 'USD' | 'EUR';
-    }
-    // Si no hay moneda guardada, se retorna la moneda predeterminada ('USD')
-    return 'USD';
+    return this.currencyHelper.retrieveSavedCurrency();
   }
 
   /*****************************************/
@@ -125,21 +122,21 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   /*****************************************/
   saveProduct(): void {
     if (this.product) {
-        const updatedFields: Partial<Product> = this.getUpdatedFields();
-        
-        if (Object.keys(updatedFields).length === 0) {
-            this.showNoChangesSnackbar();
-            return;
-        }
-        
-        this.productService.updateProduct(this.productId, updatedFields).subscribe({
-            next: (updatedProduct) => {
-                this.handleSuccessUpdate(updatedProduct);
-            },
-            error: (error) => {
-                this.handleErrorUpdate(error);
-            },
-        });
+      const updatedFields: Partial<Product> = this.getUpdatedFields();
+
+      if (Object.keys(updatedFields).length === 0) {
+        this.showNoChangesSnackbar();
+        return;
+      }
+
+      this.productService.updateProduct(this.productId, updatedFields).subscribe({
+        next: (updatedProduct) => {
+          this.handleSuccessUpdate(updatedProduct);
+        },
+        error: (error) => {
+          this.handleErrorUpdate(error);
+        },
+      });
     }
   }
 
@@ -147,69 +144,69 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
   /******** handleSuccessUpdate ************/
   /*****************************************/
   private handleSuccessUpdate(updatedProduct: Product): void {
-      this.product = updatedProduct;
-      this.isEditing = false;
-      this.showSuccessSnackbar();
-      console.log('Product updated successfully:', updatedProduct);
+    this.product = updatedProduct;
+    this.isEditing = false;
+    this.showSuccessSnackbar();
+    console.log('Product updated successfully:', updatedProduct);
   }
   /*****************************************/
   /******** handleErrorUpdate **************/
   /*****************************************/
   private handleErrorUpdate(error: any): void {
-      this.showErrorSnackbar();
-      console.error('Error updating product:', error);
+    this.showErrorSnackbar();
+    console.error('Error updating product:', error);
   }
 
   /*****************************************/
   /******** showSuccessSnackbar ************/
   /*****************************************/
   private showSuccessSnackbar(): void {
-      this.snackBar.open('Product updated successfully', 'Close', {
-          duration: 3000,
-          panelClass: ['success-snackbar'],
-      });
+    this.snackBar.open('Product updated successfully', 'Close', {
+      duration: 3000,
+      panelClass: ['success-snackbar'],
+    });
   }
 
   /*****************************************/
   /******** showErrorSnackbar **************/
   /*****************************************/
   private showErrorSnackbar(): void {
-      this.snackBar.open('Error updating product', 'Close', {
-          duration: 3000,
-          panelClass: ['error-snackbar'],
-      });
+    this.snackBar.open('Error updating product', 'Close', {
+      duration: 3000,
+      panelClass: ['error-snackbar'],
+    });
   }
 
   /*****************************************/
   /******** showNoChangesSnackbar **********/
   /*****************************************/
   private showNoChangesSnackbar(): void {
-      this.snackBar.open('No changes made', 'Close', {
-          duration: 3000,
-          panelClass: ['warning-snackbar'],
-      });
+    this.snackBar.open('No changes made', 'Close', {
+      duration: 3000,
+      panelClass: ['warning-snackbar'],
+    });
   }
 
   /*****************************************/
   /******** getUpdatedFields ***************/
   /*****************************************/
   private getUpdatedFields(): Partial<Product> {
-      const updatedFields: Partial<Product> = {};
-      if(this.product){
-        if (this.product.title !== this.originalProduct?.title) {
-            updatedFields.title = this.product.title;
-        }
-        if (this.product.price !== this.originalProduct?.price) {
-            updatedFields.price = this.product.price;
-        }
-        if (this.product.stock !== this.originalProduct?.stock) {
-            updatedFields.stock = this.product.stock;
-        }
-        if (this.product.description !== this.originalProduct?.description) {
-            updatedFields.description = this.product.description;
-        }
+    const updatedFields: Partial<Product> = {};
+    if (this.product) {
+      if (this.product.title !== this.originalProduct?.title) {
+        updatedFields.title = this.product.title;
       }
-      return updatedFields;
+      if (this.product.price !== this.originalProduct?.price) {
+        updatedFields.price = this.product.price;
+      }
+      if (this.product.stock !== this.originalProduct?.stock) {
+        updatedFields.stock = this.product.stock;
+      }
+      if (this.product.description !== this.originalProduct?.description) {
+        updatedFields.description = this.product.description;
+      }
+    }
+    return updatedFields;
   }
 
   /*****************************************/

@@ -18,6 +18,8 @@ import { ProductService } from '../../@services/product.service';
 import { Product } from '../../@interfaces/product.interface';
 // COMPONENTS
 import { ProductDetailComponent } from '../product-detail/product-detail.component';
+// HELPERS
+import { CurrencyHelper } from '../../@helpers/currency.helper';
 
 @Component({
   selector: 'app-product-list',
@@ -50,7 +52,8 @@ export class ProductListComponent implements OnInit {
   constructor(
     private productService: ProductService,
     private router: Router,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private currencyHelper: CurrencyHelper
   ) {
     this.dataSource = new MatTableDataSource<Product>();
   }
@@ -68,13 +71,7 @@ export class ProductListComponent implements OnInit {
   /******** retrieveSavedCurrency **********/
   /*****************************************/
   retrieveSavedCurrency(): 'USD' | 'EUR' {
-    // Recupera la moneda guardada en localStorage
-    const savedCurrency = localStorage.getItem('selectedCurrency');
-    if (savedCurrency === 'USD' || savedCurrency === 'EUR') {
-        return savedCurrency as 'USD' | 'EUR';
-    }
-    // Si no hay moneda guardada, se retorna la moneda predeterminada ('USD')
-    return 'USD';
+    return this.currencyHelper.retrieveSavedCurrency();
   }
 
   /*****************************************/
@@ -97,7 +94,7 @@ export class ProductListComponent implements OnInit {
   /*****************************************/
   /******* getAllProducts ******************/
   /*****************************************/
-  getAllProducts() {
+  getAllProducts(): void {
     this.productService.getAllProducts()
       .subscribe({
         next: (response) => {
@@ -143,8 +140,7 @@ export class ProductListComponent implements OnInit {
   /*****************************************/
   onCurrencyChange(newCurrency: 'USD' | 'EUR'): void {
     this.currentCurrency = newCurrency;
-    // Guarda la moneda seleccionada en localStorage
-    localStorage.setItem('selectedCurrency', newCurrency);
+    this.currencyHelper.saveCurrency(this.currentCurrency);
     this.convertPrices();
   }
 
@@ -160,16 +156,6 @@ export class ProductListComponent implements OnInit {
   }
 
   /*****************************************/
-  /****** viewProductDetails ***************/
-  /*****************************************/
-  viewProductDetails(productId: number): void {
-    this.productService.getProductDetails(productId)
-      .subscribe(res => {
-        this.router.navigate(['/product', productId]);
-      });
-  }
-
-  /*****************************************/
   /******** getNameColor *******************/
   /*****************************************/
   getNameColor(stock: number): string {
@@ -181,12 +167,14 @@ export class ProductListComponent implements OnInit {
     return '#001dff';
   }
 
+  /*****************************************/
+  /******** openProductDetailDialog ********/
+  /*****************************************/
   openProductDetailDialog(productId: number): void {
-    // Abre el modal con el componente ProductDetail
     this.dialog.open(ProductDetailComponent, {
-        data: {
-            productId: productId // Pasa el ID del producto como dato
-        }
+      data: {
+        productId: productId
+      }
     });
   }
 }
